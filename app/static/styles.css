@@ -1,0 +1,13 @@
+body {
+  background: #fafafa;
+  color: #333333;
+  margin-top: 5rem;
+}
+.container {
+    height: 10em;
+    position: relative
+}
+div.title {
+    font-size: large;
+    font-weight: bold
+}

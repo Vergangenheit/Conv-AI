@@ -8,7 +8,8 @@ import os
 import tarfile
 import tempfile
 import socket
-
+import pickle
+import config
 import torch
 
 from transformers import cached_path
@@ -18,7 +19,8 @@ HF_FINETUNED_MODEL = "https://s3.amazonaws.com/models.huggingface.co/transfer-le
 
 logger = logging.getLogger(__file__)
 
-def download_pretrained_model():
+
+def download_pretrained_model_old():
     """ Download and extract finetuned model from S3 """
     resolved_archive_file = cached_path(HF_FINETUNED_MODEL)
     tempdir = tempfile.mkdtemp()
@@ -28,13 +30,29 @@ def download_pretrained_model():
     return tempdir
 
 
+def download_pretrained_model():
+    """ Download and extract finetuned model from S3 """
+    resolved_archive_file = cached_path(HF_FINETUNED_MODEL)
+    dir = config.PRETRAINED_MODEL_DIR
+    logger.info("extracting archive file {} to temp dir {}".format(resolved_archive_file, dir))
+    with tarfile.open(resolved_archive_file, 'r:gz') as archive:
+        archive.extractall(dir)
+
+    return dir
+
+
 def get_dataset(tokenizer, dataset_path, dataset_cache):
     """ Get tokenized PERSONACHAT dataset from S3 or cache."""
     dataset_path = dataset_path or PERSONACHAT_URL
     dataset_cache = dataset_cache + '_' + type(tokenizer).__name__  # To avoid using GPT cache for GPT-2 and vice-versa
-    if dataset_cache and os.path.isfile(dataset_cache):
-        logger.info("Load tokenized dataset from cache at %s", dataset_cache)
-        dataset = torch.load(dataset_cache)
+    # if dataset_cache and os.path.isfile(dataset_cache):
+    #     logger.info("Load tokenized dataset from cache at %s", dataset_cache)
+    #     dataset = torch.load(dataset_cache)
+    if os.path.isfile(os.path.join(config.PATH, "conv_dataset", config.DATASET_FILE)):
+        logger.info("Load tokenized dataset from file at %s", config.DATASET_FILE)
+        with open(os.path.join(config.PATH, "conv_dataset", config.DATASET_FILE), "rb") as f:
+            dataset = pickle.load(f)
+
     else:
         logger.info("Download dataset from %s", dataset_path)
         personachat_file = cached_path(dataset_path)
@@ -42,14 +60,18 @@ def get_dataset(tokenizer, dataset_path, dataset_cache):
             dataset = json.loads(f.read())
 
         logger.info("Tokenize and encode the dataset")
+
         def tokenize(obj):
             if isinstance(obj, str):
                 return tokenizer.convert_tokens_to_ids(tokenizer.tokenize(obj))
             if isinstance(obj, dict):
                 return dict((n, tokenize(o)) for n, o in obj.items())
             return list(tokenize(o) for o in obj)
+
         dataset = tokenize(dataset)
         torch.save(dataset, dataset_cache)
+        # with open(os.path.join(config.PATH, "conv_dataset", config.DATASET_FILE), "wb") as f:
+        #     pickle.dump(dataset, f)
     return dataset
 
 
