@@ -17,7 +17,7 @@ import torch.nn.functional as F
 from transformers import OpenAIGPTLMHeadModel, OpenAIGPTTokenizer, GPT2LMHeadModel, GPT2Tokenizer
 from train import SPECIAL_TOKENS, build_input_from_segments, add_special_tokens_
 from utils import get_dataset, download_pretrained_model
-from database import upload_personality
+import database
 
 
 def top_filtering(logits, top_k=0., top_p=0.9, threshold=-float('Inf'), filter_value=-float('Inf')):
@@ -145,9 +145,11 @@ def run():
     personalities = [dialog["personality"] for dataset in dataset.values() for dialog in dataset]
     personality = random.choice(personalities)
     #store into firebase
-    pers_col = {}
-    pers_col['personality'] = [tokenizer.decode(x) for x in personality]
-    upload_personality(pers_col)
+    # pers_col = {}
+    # pers_col['personality'] = [tokenizer.decode(x) for x in personality]
+    # upload_personality(pers_col)
+    personality = [tokenizer.decode(x) for x in personality]
+    database.push_personality(personality)
     logger.info("Selected personality: %s", tokenizer.decode(chain(*personality)))
 
     history = []

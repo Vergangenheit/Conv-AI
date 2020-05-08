@@ -8,12 +8,36 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
 
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}">
+    <link rel="stylesheet" href="/app/static/styles.css">
 
 
     <title>Conversational AI</title>
 </head>
 <body>
+
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/7.14.3/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.14.3/firebase-firestore.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+        https://firebase.google.com/docs/web/setup#available-libraries -->
+
+    <script>
+    // Your web app's Firebase configuration
+    var firebaseConfig = {
+        apiKey: "AIzaSyDOaultaF0m7SM2qmsGdOxh2AqTkGmg4oA",
+        authDomain: "conv-ai-5d7bb.firebaseapp.com",
+        databaseURL: "https://conv-ai-5d7bb.firebaseio.com",
+        projectId: "conv-ai-5d7bb",
+        storageBucket: "conv-ai-5d7bb.appspot.com",
+        messagingSenderId: "524529023795",
+        appId: "1:524529023795:web:ce44c925525765f2f85c46"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+    </script>
+    
     <div class="container">
         <div class="box box0">
             <div class="clearfix">
