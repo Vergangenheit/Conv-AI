@@ -11,3 +11,6 @@ runs/
 gpt_personachat_cache_v2/
 *dataset_cache*
 db_config.py
+STEPS.docx
+ServiceAccountKey.json
+

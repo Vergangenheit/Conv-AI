@@ -5,9 +5,11 @@ body {
 }
 .container {
     height: 10em;
-    position: relative
+    position: relative;
+    text-align: center;
 }
 div.title {
     font-size: large;
     font-weight: bold
+
 }

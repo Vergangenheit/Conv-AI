@@ -3,10 +3,11 @@ pytorch-ignite
 transformers==2.5.1
 tensorboardX==1.8
 tensorflow  # for tensorboardX
-firebase
-python_jwt
-gcloud
-sseclient
-pycrypto
-requests-toolbelt
-pyrebase
+# firebase
+# python_jwt
+# gcloud
+# sseclient
+# pycrypto
+# requests-toolbelt
+# pyrebase
+firebase-admin

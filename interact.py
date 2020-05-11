@@ -144,27 +144,23 @@ def run():
     dataset = get_dataset(tokenizer, args.dataset_path, args.dataset_cache)
     personalities = [dialog["personality"] for dataset in dataset.values() for dialog in dataset]
     personality = random.choice(personalities)
-    #store into firebase
-    # pers_col = {}
-    # pers_col['personality'] = [tokenizer.decode(x) for x in personality]
-    # upload_personality(pers_col)
     personality = [tokenizer.decode(x) for x in personality]
     database.push_personality(personality)
-    logger.info("Selected personality: %s", tokenizer.decode(chain(*personality)))
+    # logger.info("Selected personality: %s", tokenizer.decode(chain(*personality)))
 
-    history = []
-    while True:
-        raw_text = input(">>> ")
-        while not raw_text:
-            print('Prompt should not be empty!')
-            raw_text = input(">>> ")
-        history.append(tokenizer.encode(raw_text))
-        with torch.no_grad():
-            out_ids = sample_sequence(personality, history, tokenizer, model, args)
-        history.append(out_ids)
-        history = history[-(2 * args.max_history + 1):]
-        out_text = tokenizer.decode(out_ids, skip_special_tokens=True)
-        print(out_text)
+    # history = []
+    # while True:
+    #     raw_text = input(">>> ")
+    #     while not raw_text:
+    #         print('Prompt should not be empty!')
+    #         raw_text = input(">>> ")
+    #     history.append(tokenizer.encode(raw_text))
+    #     with torch.no_grad():
+    #         out_ids = sample_sequence(personality, history, tokenizer, model, args)
+    #     history.append(out_ids)
+    #     history = history[-(2 * args.max_history + 1):]
+    #     out_text = tokenizer.decode(out_ids, skip_special_tokens=True)
+    #     print(out_text)
 
 
 if __name__ == "__main__":
