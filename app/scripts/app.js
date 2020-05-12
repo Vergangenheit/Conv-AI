@@ -1,15 +1,24 @@
-const persona = document.querySelector('.persona');
+// const persona = document.querySelector('.persona');
+// persona.innerHTML = ``;
 
-const addPersona = (statement) => {
-    let html = `${statement}<br>`;
-    persona.innerHTML += html;
-};
+// const addPersona = (statement) => {
+//     let html = `${statement}<br>`;
+//     persona.innerHTML += html;
+// };
 
-db.collection("personalities").get().then(snapshot => {
-    var values = Object.values(snapshot.docs[0].data());
-    values.forEach(element => {
-        addPersona(element);
+function updatePersona(personality){
+    const persona = document.querySelector('.persona');
+    persona.innerHTML = ``;
+    personality.forEach(element => {
+        let html = `${element}<br>`;
+        persona.innerHTML += html;
     });
-}).catch(err => {
-    console.log(err);
+}
+
+
+// realtime listener
+db.collection("personalities").onSnapshot(snapshot => {
+    let values = Object.values(snapshot.docChanges()[0].doc.data());
+    updatePersona(values[0]);
+
 });
