@@ -1,11 +1,3 @@
-// const persona = document.querySelector('.persona');
-// persona.innerHTML = ``;
-
-// const addPersona = (statement) => {
-//     let html = `${statement}<br>`;
-//     persona.innerHTML += html;
-// };
-
 function updatePersona(personality){
     const persona = document.querySelector('.persona');
     persona.innerHTML = ``;
