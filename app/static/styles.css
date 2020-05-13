@@ -8,8 +8,14 @@ body {
     position: relative;
     text-align: center;
 }
+.btn{
+  background: #43d9be;
+  color: white;
+  outline: none !important;
+  box-shadow: none !important;
+}
 div.title {
     font-size: large;
-    font-weight: bold
+    font-weight: bold;
 
 }

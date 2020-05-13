@@ -41,7 +41,7 @@ from firebase_admin import firestore
 
 def push_personality(personality):
 
-    cred = credentials.Certificate('ServiceAccountKey.json')
+    cred = credentials.Certificate('conv-ai/database/ServiceAccountKey.json')
     default_app = firebase_admin.initialize_app(cred)
     db = firestore.client()
 

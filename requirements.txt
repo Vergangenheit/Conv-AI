@@ -11,3 +11,6 @@ tensorflow  # for tensorboardX
 # requests-toolbelt
 # pyrebase
 firebase-admin
+wtforms
+flask
+flask-ngrok #for flask on colab
