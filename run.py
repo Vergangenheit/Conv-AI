@@ -15,6 +15,9 @@ import random
 
 def load_model_tokenizer(args):
 
+    global model
+    global tokenizer
+
     logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger(__file__)
     logger.info(pformat(args))
@@ -68,7 +71,7 @@ if __name__ == "__main__":
     #load model and tokenizer
     model, tokenizer = load_model_tokenizer(args)
 
-    # sample personality
+    # # sample personality
     personality = sample_personality(tokenizer, args)
 
     #launch app

@@ -7,6 +7,7 @@ from database import database
 
 def sample_personality(tokenizer, args):
     #generate a personality to be uploaded on the home page
+    global personality
     dataset = get_dataset(tokenizer, args.dataset_path, args.dataset_cache)
     personalities = [dialog["personality"] for dataset in dataset.values() for dialog in dataset]
     personality = random.choice(personalities)
