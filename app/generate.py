@@ -11,26 +11,34 @@ def sample_personality(tokenizer, args):
     dataset = get_dataset(tokenizer, args.dataset_path, args.dataset_cache)
     personalities = [dialog["personality"] for dataset in dataset.values() for dialog in dataset]
     personality = random.choice(personalities)
-    personality = [tokenizer.decode(x) for x in personality]
-    database.push_personality(personality)
+    # decode personality to be stored to db
+    personality_decoded = [tokenizer.decode(x) for x in personality]
+    database.push_personality(personality_decoded)
 
     return personality
 
-def generate_from_seed(model, tokenizer, personality, seed):
+def generate_from_seed(args, model, tokenizer, personality):
     #generate answers from inputted seeds
     
     history = []
     while True:
-        if seed is "" or None:
+        raw_text = input(">>> ")
+        while not raw_text:
             print('Prompt should not be empty!')
-        history.append(tokenizer.encode(seed))
+            raw_text = input(">>> ")
+        history.append(tokenizer.encode(raw_text))
+        # store encoded seed in db
+        database.update_history(tokenizer.encode(raw_text))
         with torch.no_grad():
-            out_ids = sample_sequence(personality, history, tokenizer, model)
+            out_ids = sample_sequence(personality, history, tokenizer, model, args)
+        # update history in db
         history.append(out_ids)
+        database.update_history(out_ids)
         history = history[-(2 * config.max_history + 1):]
-        out_text = tokenizer.decode(out_ids, skip_special_tokens=True)
 
-    return history, out_text
+        out_text = tokenizer.decode(out_ids, skip_special_tokens=True)
+        print(out_text)
+    #return history, out_text
 
 
 

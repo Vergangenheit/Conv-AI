@@ -1,8 +1,9 @@
 # main file
 from app.routes import app
 from flask_ngrok import run_with_ngrok
-from app.generate import sample_personality
+from app.generate import sample_personality, generate_from_seed
 from model.utils import download_pretrained_model
+from database.database import update_history
 import logging
 import torch
 from transformers import OpenAIGPTLMHeadModel, OpenAIGPTTokenizer, GPT2LMHeadModel, GPT2Tokenizer
@@ -67,14 +68,21 @@ if __name__ == "__main__":
     parser.add_argument("--top_p", type=float, default=0.9,
                         help="Nucleus filtering (top-p) before sampling (<=0.0: no filtering)")
     args = parser.parse_args()
+
+    logging.basicConfig(level=logging.INFO)
+    logger = logging.getLogger(__file__)
+    logger.info(pformat(args))
     
     #load model and tokenizer
     model, tokenizer = load_model_tokenizer(args)
 
     # # sample personality
     personality = sample_personality(tokenizer, args)
+    logger.info("Selected personality: %s", tokenizer.decode(chain(*personality)))
+    
+    generate_from_seed(args, model=model, tokenizer=tokenizer, personality=personality)
 
     #launch app
-    run_with_ngrok(app)
-    app.run()
+    # run_with_ngrok(app)
+    # app.run()
 

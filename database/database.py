@@ -19,6 +19,7 @@
 import firebase_admin
 from firebase_admin import credentials
 from firebase_admin import firestore
+import time
 
 
 # db.collection('personalities').document('personality').set({
@@ -41,6 +42,7 @@ from firebase_admin import firestore
 
 def push_personality(personality):
 
+    global db
     cred = credentials.Certificate('conv-ai/database/ServiceAccountKey.json')
     default_app = firebase_admin.initialize_app(cred)
     db = firestore.client()
@@ -50,3 +52,23 @@ def push_personality(personality):
 
     else:
         db.collection("personalities").document("personality").update({"personality": personality})
+
+def update_history(out_ids):
+    # cred = credentials.Certificate('conv-ai/database/ServiceAccountKey.json')
+    # default_app = firebase_admin.initialize_app(cred)
+    # db = firestore.client()
+
+    db.collection("history").document().set({'msg': out_ids, 'timestamp': firestore.SERVER_TIMESTAMP})
+
+def get_history():
+    cred = credentials.Certificate('conv-ai/database/ServiceAccountKey.json')
+    default_app = firebase_admin.initialize_app(cred)
+    db = firestore.client()
+
+    history = db.collection("history").get().to_dict()
+
+    return history
+
+
+    
+

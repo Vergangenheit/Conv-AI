@@ -144,8 +144,8 @@ def run():
     dataset = get_dataset(tokenizer, args.dataset_path, args.dataset_cache)
     personalities = [dialog["personality"] for dataset in dataset.values() for dialog in dataset]
     personality = random.choice(personalities)
-    personality = [tokenizer.decode(x) for x in personality]
-    database.push_personality(personality)
+    personality_decoded = [tokenizer.decode(x) for x in personality]
+    database.push_personality(personality_decoded)
     # logger.info("Selected personality: %s", tokenizer.decode(chain(*personality)))
 
     # history = []
