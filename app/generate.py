@@ -12,12 +12,12 @@ def sample_personality(tokenizer, args):
     personalities = [dialog["personality"] for dataset in dataset.values() for dialog in dataset]
     personality = random.choice(personalities)
     # decode personality to be stored to db
-    personality_decoded = [tokenizer.decode(x) for x in personality]
-    database.push_personality(personality_decoded)
+    # personality_decoded = [tokenizer.decode(x) for x in personality]
+    # database.push_personality(personality_decoded)
 
     return personality
 
-def generate_from_seed(args, model, tokenizer, personality):
+def generate_from_seed(args, model, tokenizer, personality, db):
     #generate answers from inputted seeds
     
     history = []
@@ -28,12 +28,12 @@ def generate_from_seed(args, model, tokenizer, personality):
             raw_text = input(">>> ")
         history.append(tokenizer.encode(raw_text))
         # store encoded seed in db
-        database.update_history(tokenizer.encode(raw_text))
+        db.update_history(tokenizer.encode(raw_text))
         with torch.no_grad():
             out_ids = sample_sequence(personality, history, tokenizer, model, args)
         # update history in db
         history.append(out_ids)
-        database.update_history(out_ids)
+        db.update_history(out_ids)
         history = history[-(2 * config.max_history + 1):]
 
         out_text = tokenizer.decode(out_ids, skip_special_tokens=True)

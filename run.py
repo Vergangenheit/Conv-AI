@@ -4,6 +4,7 @@ from flask_ngrok import run_with_ngrok
 from app.generate import sample_personality, generate_from_seed
 from model.utils import download_pretrained_model
 from database.database import update_history
+from database.database import DataBase
 import logging
 import torch
 from transformers import OpenAIGPTLMHeadModel, OpenAIGPTTokenizer, GPT2LMHeadModel, GPT2Tokenizer
@@ -79,8 +80,14 @@ if __name__ == "__main__":
     # # sample personality
     personality = sample_personality(tokenizer, args)
     logger.info("Selected personality: %s", tokenizer.decode(chain(*personality)))
-    
-    generate_from_seed(args, model=model, tokenizer=tokenizer, personality=personality)
+    #instantiate db connection
+    db = DataBase()
+    personality_decoded = [tokenizer.decode(x) for x in personality]
+    db.push_personality(personality_decoded)
+
+    #clear history collection in db
+    db.clear_history()
+    generate_from_seed(args, model=model, tokenizer=tokenizer, personality=personality, db=db)
 
     #launch app
     # run_with_ngrok(app)

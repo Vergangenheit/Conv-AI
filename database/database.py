@@ -69,6 +69,48 @@ def get_history():
 
     return history
 
+def clear_history():
+    cred = credentials.Certificate('./database/ServiceAccountKey.json')
+    default_app = firebase_admin.initialize_app(cred)
+    db = firestore.client()
+    
+    docs = db.collection("history").stream()
+    
+    if docs is not None:
+        for doc in docs:
+            doc.reference.delete()
+
+class DataBase(object):
+    def __init__(self):
+        self.cred = credentials.Certificate('./database/ServiceAccountKey.json')
+        self.default_app = firebase_admin.initialize_app(self.cred)
+        self.db = firestore.client()
+
+    def push_personality(self, personality):
+
+        if self.db.collection("personalities").document("personality").get().to_dict() is None:
+            self.db.collection("personalities").document("personality").set({"personality": personality})
+
+        else:
+            self.db.collection("personalities").document("personality").update({"personality": personality})
+
+    def update_history(self, out_ids):
+        self.db.collection("history").document().set({'msg': out_ids, 'timestamp': firestore.SERVER_TIMESTAMP})
+
+    def clear_history(self):
+        docs = self.db.collection("history").stream()
+        if docs is not None:
+            for doc in docs:
+                doc.reference.delete()
+    
+
+    
+
+
+
+if __name__ == "__main__":
+    clear_history()
+
 
     
 
