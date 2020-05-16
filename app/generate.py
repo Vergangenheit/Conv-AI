@@ -17,7 +17,7 @@ def sample_personality(tokenizer, args):
 
     return personality
 
-def generate_from_seed(args, model, tokenizer, personality, db):
+def generate_from_seed_old(args, model, tokenizer, personality, db):
     #generate answers from inputted seeds
     
     history = []
@@ -37,8 +37,34 @@ def generate_from_seed(args, model, tokenizer, personality, db):
         history = history[-(2 * config.max_history + 1):]
 
         out_text = tokenizer.decode(out_ids, skip_special_tokens=True)
-        print(out_text)
-    #return history, out_text
+        # print(out_text)
+    return out_text
+
+def generate_from_seed(model, tokenizer, personality, seed, db, args):
+    #generate answers from inputted seeds
+    
+    history = []
+    while True:
+        #raw_text = input(">>> ")
+        while not seed:
+            print('Prompt should not be empty!')
+            #raw_text = input(">>> ")
+        history.append(tokenizer.encode(seed))
+        # store encoded seed in db
+        db.update_history(tokenizer.encode(seed))
+        with torch.no_grad():
+            out_ids = sample_sequence(personality, history, tokenizer, model, args)
+        # update history in db
+        history.append(out_ids)
+        db.update_history(out_ids)
+        history = history[-(2 * config.max_history + 1):]
+
+        out_text = tokenizer.decode(out_ids, skip_special_tokens=True)
+        # print(out_text)
+    return out_text
+
+
+
 
 
 

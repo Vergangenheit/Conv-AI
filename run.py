@@ -68,6 +68,7 @@ if __name__ == "__main__":
     parser.add_argument("--top_k", type=int, default=0, help="Filter top-k tokens before sampling (<=0: no filtering)")
     parser.add_argument("--top_p", type=float, default=0.9,
                         help="Nucleus filtering (top-p) before sampling (<=0.0: no filtering)")
+    global args
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.INFO)
@@ -75,21 +76,25 @@ if __name__ == "__main__":
     logger.info(pformat(args))
     
     #load model and tokenizer
+    global model
+    global tokenizer
     model, tokenizer = load_model_tokenizer(args)
 
     # # sample personality
+    global personality
     personality = sample_personality(tokenizer, args)
     logger.info("Selected personality: %s", tokenizer.decode(chain(*personality)))
     #instantiate db connection
+    global db
     db = DataBase()
     personality_decoded = [tokenizer.decode(x) for x in personality]
     db.push_personality(personality_decoded)
 
     #clear history collection in db
     db.clear_history()
-    generate_from_seed(args, model=model, tokenizer=tokenizer, personality=personality, db=db)
+    #generate_from_seed(args, model=model, tokenizer=tokenizer, personality=personality, db=db)
 
     #launch app
-    # run_with_ngrok(app)
-    # app.run()
+    run_with_ngrok(app)
+    app.run()
 
