@@ -1,6 +1,9 @@
 # main file
-from app.routes import app
+# from app.routes import app
+from flask import Flask, render_template, request, url_for
 from flask_ngrok import run_with_ngrok
+from app.routes import app
+from app.forms import ReusableForm
 from app.generate import sample_personality, generate_from_seed
 from model.utils import download_pretrained_model
 from database.database import update_history
@@ -15,14 +18,14 @@ import warnings
 from argparse import ArgumentParser
 import random
 
-def load_model_tokenizer(args):
+def load_model_tokenizer(args, logger):
 
     global model
     global tokenizer
 
-    logging.basicConfig(level=logging.INFO)
-    logger = logging.getLogger(__file__)
-    logger.info(pformat(args))
+    # logging.basicConfig(level=logging.INFO)
+    # logger = logging.getLogger(__file__)
+    # logger.info(pformat(args))
 
     if args.model_checkpoint == "":
         if args.model == 'gpt2':
@@ -76,9 +79,9 @@ if __name__ == "__main__":
     logger.info(pformat(args))
     
     #load model and tokenizer
-    global model
-    global tokenizer
-    model, tokenizer = load_model_tokenizer(args)
+    # global model
+    # global tokenizer
+    model, tokenizer = load_model_tokenizer(args, logger)
 
     # # sample personality
     global personality

@@ -1,9 +1,8 @@
 from flask import Flask, render_template, request, url_for
 from app.forms import ReusableForm
 from app.generate import generate_from_seed
-from 
 
-# instiate app
+# instantiate app
 app = Flask(__name__)
 
 
@@ -12,11 +11,11 @@ app = Flask(__name__)
 @app.route("/", methods=["GET", "POST"])
 def home():
     form = ReusableForm(request.form)
-    if request.method == "POST":
+    if request.method == "POST" and form.validate():
         #extract info
         seed = request.form['seed']
-        return render_template("seeded.html", input=generate_from_seed(model=model,
-        tokenizer=tokenizer, personality=personality, seed=seed, args=args))
+        return render_template("seeded.html", input=generate_from_seed(args, model,
+        tokenizer, personality, db, seed=seed))
         
     return render_template("index.html", form=form)
 
