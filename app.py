@@ -15,7 +15,7 @@ def index():
 def home():
     try:
         input_text = ' '.join(request.json['input_text'].split())
-        out_text = generate_from_seed(args=args, personality=personality, db=db, seed=input_text)
+        out_text = generate_from_seed(seed=input_text)
         return app.response_class(json.dumps(out_text), status=200, mimetype='application/json')
 
     except Exception as e:
