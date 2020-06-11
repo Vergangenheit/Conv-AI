@@ -1,9 +1,7 @@
 # main file
-from app.routes import app
 from flask import Flask, render_template, request, url_for
-from app.forms import ReusableForm
 from flask_ngrok import run_with_ngrok
-from app.generate import sample_personality
+from generate import sample_personality
 from model.utils import download_pretrained_model
 from database.database import update_history
 from database.database import DataBase
