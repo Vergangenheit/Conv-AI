@@ -1,15 +1,15 @@
 # main file
-# from app.routes import app
-from flask import Flask, render_template, request, url_for
-from flask_ngrok import run_with_ngrok
 from app.routes import app
+from flask import Flask, render_template, request, url_for
 from app.forms import ReusableForm
-from app.generate import sample_personality, generate_from_seed
+from flask_ngrok import run_with_ngrok
+from app.generate import sample_personality
 from model.utils import download_pretrained_model
 from database.database import update_history
 from database.database import DataBase
 import logging
 import torch
+import json
 from transformers import OpenAIGPTLMHeadModel, OpenAIGPTTokenizer, GPT2LMHeadModel, GPT2Tokenizer
 from model.train import SPECIAL_TOKENS, build_input_from_segments, add_special_tokens_
 from itertools import chain
@@ -17,6 +17,9 @@ from pprint import pformat
 import warnings
 from argparse import ArgumentParser
 import random
+from model.interact import sample_sequence
+import config
+
 
 def load_model_tokenizer(args, logger):
 
@@ -47,6 +50,49 @@ def load_model_tokenizer(args, logger):
     add_special_tokens_(model, tokenizer)
 
     return model, tokenizer
+
+def generate_from_seed(args, personality, seed, db):
+    #generate answers from inputted seeds
+    
+    history = []
+    while True:
+        #raw_text = input(">>> ")
+        while not seed:
+            print('Prompt should not be empty!')
+            #raw_text = input(">>> ")
+        history.append(tokenizer.encode(seed))
+        # store encoded seed in db
+        db.update_history(tokenizer.encode(seed))
+        with torch.no_grad():
+            out_ids = sample_sequence(personality, history, tokenizer, model, args)
+        # update history in db
+        history.append(out_ids)
+        db.update_history(out_ids)
+        history = history[-(2 * config.max_history + 1):]
+
+        out_text = tokenizer.decode(out_ids, skip_special_tokens=True)
+        # print(out_text)
+    return out_text
+
+# instantiate app
+app = Flask(__name__)
+
+@app.route('/')
+def index():
+    return render_template('index.html')
+
+# create homepage
+@app.route("/get_response", methods=["POST"])
+def home():
+    try:
+        input_text = ' '.join(request.json['input_text'].split())
+        out_text = generate_from_seed(args=args, personality=personality, db=db, seed=input_text)
+        return app.response_class(json.dumps(out_text), status=200, mimetype='application/json')
+
+    except Exception as e:
+        err = str(e)
+        print(err)
+        return app.response_class(response=json.dumps(err), status=500, mimetype='application/json')
 
 if __name__ == "__main__":
     parser = ArgumentParser()

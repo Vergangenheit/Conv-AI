@@ -9,7 +9,7 @@ import tarfile
 import tempfile
 import socket
 import pickle
-import config
+import .config
 import torch
 
 from transformers import cached_path
