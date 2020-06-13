@@ -1,14 +1,17 @@
 # main file
-from app.routes import app
+from flask import Flask, render_template, request, url_for
+from app.forms import ReusableForm
 from flask_ngrok import run_with_ngrok
-from app.generate import sample_personality, generate_from_seed
+from app.generate import sample_personality
 from model.utils import download_pretrained_model
 from database.database import update_history
 from database.database import DataBase
 import logging
 import torch
+import config
 from transformers import OpenAIGPTLMHeadModel, OpenAIGPTTokenizer, GPT2LMHeadModel, GPT2Tokenizer
 from model.train import SPECIAL_TOKENS, build_input_from_segments, add_special_tokens_
+from model.interact import sample_sequence
 from itertools import chain
 from pprint import pformat
 import warnings
@@ -44,6 +47,43 @@ def load_model_tokenizer(args):
     add_special_tokens_(model, tokenizer)
 
     return model, tokenizer
+
+def generate_from_seed(seed):
+    #generate answers from inputted seeds
+    
+    history = []
+    while True:
+        #raw_text = input(">>> ")
+        while not seed:
+            print('Prompt should not be empty!')
+            #raw_text = input(">>> ")
+        history.append(tokenizer.encode(seed))
+        # store encoded seed in db
+        db.update_history(tokenizer.encode(seed))
+        with torch.no_grad():
+            out_ids = sample_sequence(personality, history, tokenizer, model, args)
+        # update history in db
+        history.append(out_ids)
+        db.update_history(out_ids)
+        history = history[-(2 * config.max_history + 1):]
+
+        out_text = tokenizer.decode(out_ids, skip_special_tokens=True)
+        # print(out_text)
+    return out_text
+
+# instantiate app
+app = Flask(__name__)
+
+# create homepage
+@app.route("/", methods=["GET", "POST"])
+def home():
+    form = ReusableForm(request.form)
+    if request.method == "POST":
+        #extract info
+        seed = request.form['seed']
+        return render_template("seeded.html", input=generate_from_seed(seed=seed))
+        
+    return render_template("index.html", form=form)
 
 if __name__ == "__main__":
     parser = ArgumentParser()

@@ -40,7 +40,7 @@ def generate_from_seed_old(args, model, tokenizer, personality, db):
         # print(out_text)
     return out_text
 
-def generate_from_seed(model, tokenizer, personality, seed, db, args):
+def generate_from_seed(personality, seed, db, args):
     #generate answers from inputted seeds
     
     history = []
