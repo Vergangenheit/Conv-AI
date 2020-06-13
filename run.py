@@ -101,11 +101,19 @@ app = Flask(__name__)
 @app.route("/", methods=["GET", "POST"])
 def home():
     form = ReusableForm(request.form)
+    history = []
     if request.method == "POST":
         #extract info
         seed = request.form['seed']
-        
-        generate_from_seed_db(seed=seed)
+        history.append(tokenizer.encode(seed))
+        db.update_history(seed)
+        with torch.no_grad():
+            out_ids = sample_sequence(personality, history, tokenizer, model, args)
+        history.append(out_ids)
+        # db.update_history(out_ids)
+        history = history[-(2 * config.max_history + 1):]
+        out_text = tokenizer.decode(out_ids, skip_special_tokens=True)
+        db.update_history(out_text)
         
     return render_template("index.html", form=form)
 
