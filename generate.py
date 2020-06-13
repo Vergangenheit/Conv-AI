@@ -63,6 +63,29 @@ def generate_from_seed(personality, seed, db, args):
         # print(out_text)
     return out_text
 
+def generate_from_seed_db(seed):
+    #generate answers from inputted seeds
+    
+    history = []
+    while True:
+        #raw_text = input(">>> ")
+        while not seed:
+            print('Prompt should not be empty!')
+            #raw_text = input(">>> ")
+        history.append(tokenizer.encode(seed))
+        # store seed in db
+        db.update_history(seed)
+        with torch.no_grad():
+            out_ids = sample_sequence(personality, history, tokenizer, model, args)
+        # update history in db
+        history.append(out_ids)
+        # db.update_history(out_ids)
+        history = history[-(2 * config.max_history + 1):]
+
+        out_text = tokenizer.decode(out_ids, skip_special_tokens=True)
+        db.update_history(out_text)
+        # print(out_text)
+
 
 
 
