@@ -99,8 +99,13 @@ class DataBase(object):
 
     def clear_history(self):
         docs = self.db.collection("history").stream()
-        if docs is not None:
-            for doc in docs:
+        done_looping = False
+        while not done_looping:
+            try:
+                doc = next(docs)
+            except StopIteration:
+                done_looping = True
+            else:
                 doc.reference.delete()
     
 
