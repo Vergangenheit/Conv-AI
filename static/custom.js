@@ -7,6 +7,18 @@ function updatePersona(personality){
     });
 }
 
+function updateChat(msg){
+    const chat = document.querySelector('.chat');
+    //chat.innerHTML = '';
+    let html = `${msg}<br>`;
+    chat.innerHTML += html;
+}
+
+db.collection("history").orderBy('timestamp').onSnapshot(snapshot => {
+    snapshot.docChanges().forEach(change => {
+        updateChat(change.doc.data().msg);
+    });
+});
 
 // realtime listener
 db.collection("personalities").onSnapshot(snapshot => {
