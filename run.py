@@ -102,9 +102,11 @@ app = Flask(__name__)
 def home():
     form = ReusableForm(request.form)
     history = []
-    if request.method == "POST":
+    if request.method == "POST" and form.validate():
         #extract info
         seed = request.form['seed']
+        # seed = ' '.join(request.json['input_text'].split())
+        logger.info("Seed is %s", seed)
         history.append(tokenizer.encode(seed))
         db.update_history(seed)
         with torch.no_grad():
@@ -114,6 +116,8 @@ def home():
         history = history[-(2 * config.max_history + 1):]
         out_text = tokenizer.decode(out_ids, skip_special_tokens=True)
         db.update_history(out_text)
+
+        return render_template("index.html", form=form)
         
     return render_template("index.html", form=form)
 

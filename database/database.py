@@ -114,7 +114,8 @@ class DataBase(object):
 
 
 if __name__ == "__main__":
-    clear_history()
+    db = DataBase()
+    db.update_history("what's up man?")
 
 
     
