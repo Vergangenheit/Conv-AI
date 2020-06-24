@@ -1,5 +1,5 @@
 # main file
-from flask import Flask, render_template, request, url_for
+from flask import Flask, render_template, request, url_for, redirect
 from forms import ReusableForm
 from flask_ngrok import run_with_ngrok
 from generate import sample_personality
@@ -106,7 +106,6 @@ def home():
         #extract info
         seed = request.form['seed']
         # seed = ' '.join(request.json['input_text'].split())
-        logger.info("Seed is %s", seed)
         history.append(tokenizer.encode(seed))
         db.update_history(seed)
         with torch.no_grad():
@@ -117,7 +116,8 @@ def home():
         out_text = tokenizer.decode(out_ids, skip_special_tokens=True)
         db.update_history(out_text)
 
-        return render_template("index.html", form=form)
+        return redirect(url_for("home"))
+        # return render_template("index.html", form=form)
         
     return render_template("index.html", form=form)
 
