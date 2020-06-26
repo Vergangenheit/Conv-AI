@@ -18,8 +18,8 @@ import warnings
 from argparse import ArgumentParser
 import random
 
-def load_model_tokenizer(args):
 
+def load_model_tokenizer(args):
     global model
     global tokenizer
 
@@ -40,7 +40,7 @@ def load_model_tokenizer(args):
 
     logger.info("Get pretrained model and tokenizer")
     tokenizer_class, model_class = (GPT2Tokenizer, GPT2LMHeadModel) if args.model == 'gpt2' else (
-    OpenAIGPTTokenizer, OpenAIGPTLMHeadModel)
+        OpenAIGPTTokenizer, OpenAIGPTLMHeadModel)
     tokenizer = tokenizer_class.from_pretrained(args.model_checkpoint)
     model = model_class.from_pretrained(args.model_checkpoint)
     model.to(args.device)
@@ -48,15 +48,16 @@ def load_model_tokenizer(args):
 
     return model, tokenizer
 
+
 def generate_from_seed(seed):
-    #generate answers from inputted seeds
-    
+    # generate answers from inputted seeds
+
     history = []
     while True:
-        #raw_text = input(">>> ")
+        # raw_text = input(">>> ")
         while not seed:
             print('Prompt should not be empty!')
-            #raw_text = input(">>> ")
+            # raw_text = input(">>> ")
         history.append(tokenizer.encode(seed))
         # store encoded seed in db
         db.update_history(tokenizer.encode(seed))
@@ -71,15 +72,16 @@ def generate_from_seed(seed):
         # print(out_text)
     return out_text
 
+
 def generate_from_seed_db(seed):
-    #generate answers from inputted seeds
-    
+    # generate answers from inputted seeds
+
     history = []
     while True:
-        #raw_text = input(">>> ")
+        # raw_text = input(">>> ")
         while not seed:
             print('Prompt should not be empty!')
-            #raw_text = input(">>> ")
+            # raw_text = input(">>> ")
         history.append(tokenizer.encode(seed))
         # store seed in db
         db.update_history(seed)
@@ -94,8 +96,10 @@ def generate_from_seed_db(seed):
         db.update_history(out_text)
         # print(out_text)
 
+
 # instantiate app
 app = Flask(__name__)
+
 
 # create homepage
 @app.route("/", methods=["GET", "POST"])
@@ -103,7 +107,7 @@ def home():
     form = ReusableForm(request.form)
     history = []
     if request.method == "POST" and form.validate():
-        #extract info
+        # extract info
         seed = request.form['seed']
         # seed = ' '.join(request.json['input_text'].split())
         history.append(tokenizer.encode(seed))
@@ -118,8 +122,9 @@ def home():
 
         return redirect(url_for("home"))
         # return render_template("index.html", form=form)
-        
+
     return render_template("index.html", form=form)
+
 
 if __name__ == "__main__":
     parser = ArgumentParser()
@@ -130,7 +135,8 @@ if __name__ == "__main__":
                         choices=['openai-gpt', 'gpt2'])  # anything besides gpt2 will load openai-gpt
     # parser.add_argument("--model", type=str, default="gpt2", help="Model type (openai-gpt or gpt2)",
     #                     choices=['openai-gpt', 'gpt2'])  # anything besides gpt2 will load openai-gpt
-    parser.add_argument("--model_checkpoint", type=str, default="drive/My Drive/GPT-2_Text_Generation/model_checkpoint", help="Path, url or short name of the model")
+    parser.add_argument("--model_checkpoint", type=str, default="drive/My Drive/GPT-2_Text_Generation/model_checkpoint",
+                        help="Path, url or short name of the model")
     # parser.add_argument("--model_checkpoint", type=str, default="", help="Path, url or short name of the model")
     parser.add_argument("--max_history", type=int, default=2, help="Number of previous utterances to keep in history")
     parser.add_argument("--device", type=str, default="cuda" if torch.cuda.is_available() else "cpu",
@@ -150,8 +156,8 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     logger = logging.getLogger(__file__)
     logger.info(pformat(args))
-    
-    #load model and tokenizer
+
+    # load model and tokenizer
     global model
     global tokenizer
     model, tokenizer = load_model_tokenizer(args)
@@ -160,17 +166,16 @@ if __name__ == "__main__":
     global personality
     personality = sample_personality(tokenizer, args)
     logger.info("Selected personality: %s", tokenizer.decode(chain(*personality)))
-    #instantiate db connection
+    # instantiate db connection
     global db
     db = DataBase()
     personality_decoded = [tokenizer.decode(x) for x in personality]
     db.push_personality(personality_decoded)
 
-    #clear history collection in db
+    # clear history collection in db
     db.clear_history()
-    #generate_from_seed(args, model=model, tokenizer=tokenizer, personality=personality, db=db)
+    # generate_from_seed(args, model=model, tokenizer=tokenizer, personality=personality, db=db)
 
-    #launch app
+    # launch app
     run_with_ngrok(app)
     app.run()
-

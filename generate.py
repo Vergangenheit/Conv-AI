@@ -6,7 +6,7 @@ from database import database
 
 
 def sample_personality(tokenizer, args):
-    #generate a personality to be uploaded on the home page
+    # generate a personality to be uploaded on the home page
     global personality
     dataset = get_dataset(tokenizer, args.dataset_path, args.dataset_cache)
     personalities = [dialog["personality"] for dataset in dataset.values() for dialog in dataset]
@@ -17,9 +17,10 @@ def sample_personality(tokenizer, args):
 
     return personality
 
+
 def generate_from_seed_old(args, model, tokenizer, personality, db):
-    #generate answers from inputted seeds
-    
+    # generate answers from inputted seeds
+
     history = []
     while True:
         raw_text = input(">>> ")
@@ -40,15 +41,16 @@ def generate_from_seed_old(args, model, tokenizer, personality, db):
         # print(out_text)
     return out_text
 
+
 def generate_from_seed(personality, seed, db, args):
-    #generate answers from inputted seeds
-    
+    # generate answers from inputted seeds
+
     history = []
     while True:
-        #raw_text = input(">>> ")
+        # raw_text = input(">>> ")
         while not seed:
             print('Prompt should not be empty!')
-            #raw_text = input(">>> ")
+            # raw_text = input(">>> ")
         history.append(tokenizer.encode(seed))
         # store encoded seed in db
         db.update_history(tokenizer.encode(seed))
@@ -63,15 +65,16 @@ def generate_from_seed(personality, seed, db, args):
         # print(out_text)
     return out_text
 
+
 def generate_from_seed_db(seed):
-    #generate answers from inputted seeds
-    
+    # generate answers from inputted seeds
+
     history = []
     while True:
-        #raw_text = input(">>> ")
+        # raw_text = input(">>> ")
         while not seed:
             print('Prompt should not be empty!')
-            #raw_text = input(">>> ")
+            # raw_text = input(">>> ")
         history.append(tokenizer.encode(seed))
         # store seed in db
         db.update_history(seed)
@@ -85,10 +88,3 @@ def generate_from_seed_db(seed):
         out_text = tokenizer.decode(out_ids, skip_special_tokens=True)
         db.update_history(out_text)
         # print(out_text)
-
-
-
-
-
-
-
