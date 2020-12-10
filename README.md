@@ -1,12 +1,8 @@
 # 🦄 Building a State-of-the-Art Conversational AI with Transfer Learning
 
-The present repo contains the code accompanying the blog post [🦄 How to build a State-of-the-Art Conversational AI with Transfer Learning](https://medium.com/@Thomwolf/how-to-build-a-state-of-the-art-conversational-ai-with-transfer-learning-2d818ac26313).
+The present repo forked the code accompanying the blog post [🦄 How to build a State-of-the-Art Conversational AI with Transfer Learning](https://medium.com/@Thomwolf/how-to-build-a-state-of-the-art-conversational-ai-with-transfer-learning-2d818ac26313).
 
-This code is a clean and commented code base with training and testing scripts that can be used to train a dialog agent leveraging transfer Learning from an OpenAI GPT and GPT-2 Transformer language model.
-
-This codebase can be used to reproduce the results of HuggingFace's participation to NeurIPS 2018 dialog competition [ConvAI2](http://convai.io/) which was state-of-the-art on the automatic metrics. The 3k+ lines of competition code was distilled in about 250 lines of training code with distributed & FP16 options to form the present repository.
-
-This model can be trained in about one hour on a 8 V100 cloud instance (currently costs about $25) and a pre-trained model is also made available.
+I added a Flask app to generate a Conversational AI prototype with the help of Javascript and Firebase database. Currently the code requires a GPU and supports only the OpenAIGPT language model. 
 
 ## Installation
 
@@ -21,7 +17,6 @@ We make a pretrained and fine-tuned model available on our S3 [here](https://s3.
 
 ## Citation
 
-If you use this code in your research, you can cite our NeurIPS CAI workshop [paper](http://arxiv.org/abs/1901.08149):
 
 ```bash
 @article{DBLP:journals/corr/abs-1901-08149,
@@ -42,3 +37,6 @@ If you use this code in your research, you can cite our NeurIPS CAI workshop [pa
   bibsource = {dblp computer science bibliography, https://dblp.org}
 }
 ```
+## ToDo
+
+Add code to plug a GPT2 pretrained model and to fine tune one as well.
